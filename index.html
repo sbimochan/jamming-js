@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Jamming JS</title>
+  <link rel="stylesheet" href="css/reset.css">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/font-awesome.min.css">
+  <link rel="shortcut icon" type="image/png" href="/favicon.ico" />
+</head>
+
+<body>
+  <div class="mainWrapper" id="mainWrapper">
+    <div class="mainSoundContainerWrapper" id="mainSoundContainerWrapper">
+
+      <div id="mainSoundContainer"></div>
+    </div>
+    <!-- <textarea name="" id="composedNotesArea" cols="50" rows="5"></textarea> -->
+    <div class="container" id="container">
+    <div class="compose-container">
+
+      <div class="compose-scroll-main">
+        <div class="compose-section">
+          <!-- <div class="column"></div> -->
+        
+        </div>
+      </div>
+      
+    </div>
+    </div>
+    <div class="utilitiesRow" id="utilitiesRow">
+      <div class="utitlitiesContents">
+
+        <div id="fileLoadDiv" class="fileLoadDiv">
+          <div>Load your composition: </div>
+          <input id="input_file" class="input_file" type="file">
+          <button id="import">Submit</button>
+        </div>
+    
+         <!-- <button onclick="playScale()">Play</button> -->
+        <div class="tempoAndDetune clearfix">
+          <div class="tempoDiv">
+            Tempo:
+            <span id="tempoValue"></span>
+            <!-- <input type="text" id="tempoValue" > -->
+            <input type="range" id="tempo" min="10" max="400" value="60" onchange="printValue('tempo','tempoValue','bpm')">
+          </div>
+          <div class="detuneDiv">
+            Detune:
+            <span id="detuneValue"></span>
+            <input type="range" id="detune" onchange="printValue('detune','detuneValue','cents')">
+          </div>
+        </div>
+         
+      </div>
+    </div>
+  </div>
+  <!-- <button onclick="gainScale()">Gain</button>
+  <button onclick="stopScale()">Stop</button> -->
+
+  <!-- <script src="script.js"></script> -->
+  <script src="notevalues.js"></script>
+  <script src="sound.js"></script>
+  <!-- <script src="build/app.js"></script> -->
+  <!-- <script src="filter.js"></script> -->
+</body>
+
+</html>
