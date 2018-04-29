@@ -3,3 +3,5 @@ build
 src
 webpack.config.js
 package.json
+.vscode
+.DS_Store

@@ -10,6 +10,9 @@
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/font-awesome.min.css">
   <link rel="shortcut icon" type="image/png" href="/favicon.ico" />
+  <!-- <script>
+    console.log("%cStop!","color: rgb(255, 0, 0);font-size: 120px;font-weight: bold;");
+  </script> -->
 </head>
 
 <body>
@@ -20,52 +23,45 @@
     </div>
     <!-- <textarea name="" id="composedNotesArea" cols="50" rows="5"></textarea> -->
     <div class="container" id="container">
-    <div class="compose-container">
+      <div class="compose-container">
 
-      <div class="compose-scroll-main">
-        <div class="compose-section">
-          <!-- <div class="column"></div> -->
-        
-        </div>
-      </div>
-      
-    </div>
-    </div>
-    <div class="utilitiesRow" id="utilitiesRow">
-      <div class="utitlitiesContents">
+        <div class="compose-scroll-main">
+          <div class="compose-section">
+            <!-- <div class="column"></div> -->
 
-        <div id="fileLoadDiv" class="fileLoadDiv">
-          <div>Load your composition: </div>
-          <input id="input_file" class="input_file" type="file">
-          <button id="import">Submit</button>
-        </div>
-    
-         <!-- <button onclick="playScale()">Play</button> -->
-        <div class="tempoAndDetune clearfix">
-          <div class="tempoDiv">
-            Tempo:
-            <span id="tempoValue"></span>
-            <!-- <input type="text" id="tempoValue" > -->
-            <input type="range" id="tempo" min="10" max="400" value="60" onchange="printValue('tempo','tempoValue','bpm')">
-          </div>
-          <div class="detuneDiv">
-            Detune:
-            <span id="detuneValue"></span>
-            <input type="range" id="detune" onchange="printValue('detune','detuneValue','cents')">
           </div>
         </div>
-         
       </div>
     </div>
-  </div>
-  <!-- <button onclick="gainScale()">Gain</button>
-  <button onclick="stopScale()">Stop</button> -->
+    <div class=utilitiesRow id=utilitiesRow>
+      <div class=utitlitiesContents>
+        <div class=fileLoadDiv id=fileLoadDiv>
+          <div>Load your composition:</div>
+          <input id=input_file type=file class=input_file>
+          <button id=import>Submit</button>
+        </div>
+        <div class="clearfix tempoAndDetune">
+          <div class=tempoDiv>Tempo:
+            <span id=tempoValue></span>
+            <input id=tempo type=range onchange='printValue("tempo","tempoValue","bpm")' max=400 min=10 value=60>
+          </div>
+          <div class=detuneDiv>Detune:
+            <span id=detuneValue></span>
+            <input id=detune type=range onchange='printValue("detune","detuneValue","cents")'>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id='songList'>
+      <h2>Firebase songs</h2>
 
-  <!-- <script src="script.js"></script> -->
-  <script src="notevalues.js"></script>
-  <script src="sound.js"></script>
-  <!-- <script src="build/app.js"></script> -->
-  <!-- <script src="filter.js"></script> -->
+    </div>
+
+    <script src="notevalues.js"></script>
+    <script src="sound.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/4.9.1/firebase.js"></script>
+    <script src="app.js"></script>
+
 </body>
 
 </html>
