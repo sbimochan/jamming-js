@@ -36,7 +36,7 @@ dbRefObject.on("value", snap => {
       li.appendChild(newSong);
       ul.appendChild(li);
       newSong.addEventListener("click", () => {
-        columnNotesArray=[];
+        reset();
         let results = JSON.parse(newSong.value);
         results.forEach(result => {
           let column = new ColumnNote(

@@ -77,7 +77,7 @@ class MainSound {
 				column.waveform = this.toneSelector.value; // changing instrument
 				column.toneSelector.value = this.toneSelector.value;
 			});
-		});
+    });
 	}
 }
 let isInitialExecuted = false;
@@ -101,7 +101,7 @@ class ColumnNote {
 			durations.push(noteTimeLength);
 		}
 		this.column = document.createElement('div');
-		this.column.setAttribute('class', 'column');
+		this.column.setAttribute('class', 'column notes-container');
 		composeSection[0].appendChild(this.column);
 		this.toneSelector = document.createElement('select');
 		this.toneSelector.style.width = '100px';
@@ -294,7 +294,6 @@ function playComposition() {
     if (columnNotesArray[i] && columnNotesArray[i].column) {
       columnNotesArray[i].column.style.backgroundColor = '#e5f6ff';
     }
-    
     for (const hertz of columnNotesArray[i].composedHertzArray) {
       sound.play(
         hertz,
@@ -304,6 +303,7 @@ function playComposition() {
       ); //third param = detune in cents
       sound.oscillator.type = columnNotesArray[i].waveform;
     }
+    // console.log(durations);
 		setTimeout(playComposition, durations[index]);
 		i++;
 		index++;
@@ -347,4 +347,14 @@ function printValue(sliderID, spanID, unit) {
 	let output = document.getElementById(spanID);
 	output.innerHTML = slider.value + unit;
 	return output.value;
+}
+
+function reset() {
+  columnNotesArray = [];
+  durations = [];
+  const columns = document.getElementsByClassName('notes-container');
+  while (columns.length > 0) {
+    document.getElementsByClassName('compose-section')[0].removeChild(columns[0]);
+  }
+  isInitialExecuted=false;
 }
