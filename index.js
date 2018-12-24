@@ -281,17 +281,20 @@ tempoSlider.addEventListener('change', () => {
 let i = 0;
 let index = 0;
 function playComposition() {
-  console.log(durations)
-	if (columnNotesArray.length != 0) {
+	if (columnNotesArray.length !== 0) {
 		let now = context.currentTime;
-		if (i != 0) {
+		if (i !== 0) {
 			columnNotesArray[i - 1].column.style.backgroundColor = '#f3f3f3';
 		} else {
 			columnNotesArray[
 				columnNotesArray.length - 1
 			].column.style.backgroundColor = '#f3f3f3';
-		}
-		columnNotesArray[i].column.style.backgroundColor = '#e5f6ff';
+    }
+    
+    if (columnNotesArray[i] && columnNotesArray[i].column) {
+      columnNotesArray[i].column.style.backgroundColor = '#e5f6ff';
+    }
+    
     for (const hertz of columnNotesArray[i].composedHertzArray) {
       sound.play(
         hertz,
