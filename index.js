@@ -15,7 +15,6 @@ class Sound {
 	}
 	play(hertz, time, cents, endTime) {
 		this.init();
-		console.log(hertz);
 		this.oscillator.frequency.setValueAtTime(hertz, this.context.currentTime);
 		this.oscillator.detune.setValueAtTime(cents, this.context.currentTime);
 		this.gainNode.gain.setValueAtTime(1, this.context.currentTime); // currentTime is 2x accurate than Date
@@ -282,6 +281,7 @@ tempoSlider.addEventListener('change', () => {
 let i = 0;
 let index = 0;
 function playComposition() {
+  console.log(durations)
 	if (columnNotesArray.length != 0) {
 		let now = context.currentTime;
 		if (i != 0) {
