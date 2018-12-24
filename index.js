@@ -15,6 +15,7 @@ class Sound {
   }
   play(hertz, time, cents, endTime) {
     this.init();
+    console.log(hertz)
     this.oscillator.frequency.setValueAtTime(hertz, this.context.currentTime);
     this.oscillator.detune.setValueAtTime(cents, this.context.currentTime);
     this.gainNode.gain.setValueAtTime(1, this.context.currentTime); // currentTime is 2x accurate than Date
@@ -73,17 +74,17 @@ class MainSound {
     }
     this.mainSoundDiv.appendChild(this.toneSelector);
     this.toneSelector.addEventListener("change", () => {
-      columnNotesArray.forEach(column => {
+      columnNotesArray.map(column => {
         column.waveform = this.toneSelector.value; // changing instrument
         column.toneSelector.value = this.toneSelector.value;
       });
     });
   }
 }
-let flag = true;
+let isInitialExecuted = false;
 class ColumnNote {
   constructor(hertzArr, waveform, noteTime, noteTimeLength) {
-    this.composedHertzArray = [];
+    this.composedHertzArray = new Set();
     this.noteTime = 1;
     this.noteTimeLength = 1000;
     this.waveform = "sine";
@@ -95,7 +96,7 @@ class ColumnNote {
       noteTimeLength != "undefined"
     ) {
       this.waveform = waveform;
-      this.composedHertzArray = hertzArr.slice(0);
+      this.composedHertzArray.add(hertzArr);
       this.noteTime = noteTime;
       this.noteTimeLength = noteTimeLength;
       durations.push(noteTimeLength);
@@ -125,22 +126,16 @@ class ColumnNote {
       let hertzIndex = notesCollection[noteValue];
       note.noteButtons.addEventListener("click", () => {
         note.isClicked = !note.isClicked;
-        if (flag) {
+        if (!isInitialExecuted) {
           // to start playing only on first click
           playComposition();
-          flag = false;
-        } else {
-          console.log("note selected");
+          isInitialExecuted = true;
         }
         if (note.isClicked) {
-          this.composedHertzArray.push(hertzIndex);
+          this.composedHertzArray.add(hertzIndex);
         } else {
-          this.composedHertzArray.splice(
-            this.composedHertzArray.indexOf(
-              notesCollection[note.noteButtons.value]
-            ),
-            1
-          );
+          // Find and remove it from array
+          this.composedHertzArray.delete(notesCollection[note.noteButtons.value]);
         }
       });
       note.noteButtons.addEventListener("click", () => {
@@ -148,7 +143,7 @@ class ColumnNote {
           note.noteButtons.classList.toggle("selected");
         }
       });
-      if (this.composedHertzArray.indexOf(hertzIndex) != -1) {
+      if (this.composedHertzArray.has(hertzIndex)) {
         note.noteButtons.classList.toggle("selected");
       }
     }
@@ -196,11 +191,13 @@ const sounds = {
   square: "retro",
   sawtooth: "Stranger Things"
 };
+
 const noteTypes = {
   "1": "whole note",
   "0.5": "half note",
   "0.25": "quarter note"
 };
+
 let mainSound = new MainSound();
 let columnNotesArray = [];
 let newColumn = new NewColumn(); //Adder
@@ -221,6 +218,7 @@ exporter.button.addEventListener("click", () => {
       song: JSON.stringify(columnNotesArray)
     });
 });
+
 var ID = function() {
   return (
     "_" +
@@ -229,6 +227,7 @@ var ID = function() {
       .substr(2, 9)
   );
 };
+
 let durations = [];
 newColumn.addColumn.addEventListener("click", () => {
   let columnNote = new ColumnNote();
@@ -292,9 +291,11 @@ function playComposition() {
         "#f3f3f3";
     }
     columnNotesArray[i].column.style.backgroundColor = "#e5f6ff";
-    for (let j = 0; j < columnNotesArray[i].composedHertzArray.length; j++) {
+    for (let j = 0; j < columnNotesArray[i].composedHertzArray.size; j++) {
+      // console.log(columnNotesArray[i].composedHertzArray[j]);
+      // debugger
       sound.play(
-        columnNotesArray[i].composedHertzArray[j],
+        columnNotesArray[i].composedHertzArray.values().next().value,
         now,
         detuneSlider.value,
         columnNotesArray[i].noteTime
