@@ -327,10 +327,12 @@ let importer = document
     if (file.length != 1) {
       return false;
     }
-    let confirm = window.confirm('Are you sure you want to discard changes?')
-    if (!confirm) {
-      return
-    }
+    if (columnNotesArray.length > 0) {
+      let confirm = window.confirm('Are you sure you want to discard changes?')
+      if (!confirm) {
+        return
+      }
+		}
     reset();
     let fr = new FileReader();
     fr.onload = progressEvent => {
