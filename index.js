@@ -83,7 +83,7 @@ class MainSound {
 let isInitialExecuted = false;
 class ColumnNote {
   constructor(hertzArr, waveform, noteTime, noteTimeLength) {
-    this.composedHertzArray = new Set();
+    this.composedHertzArray = [];
     this.noteTime = 1;
     this.noteTimeLength = 1000;
     this.waveform = 'sine';
@@ -95,7 +95,7 @@ class ColumnNote {
       noteTimeLength != 'undefined'
     ) {
       this.waveform = waveform;
-      this.composedHertzArray.add(hertzArr);
+      this.composedHertzArray = hertzArr.slice(0);
       this.noteTime = noteTime;
       this.noteTimeLength = noteTimeLength;
       durations.push(noteTimeLength);
@@ -124,29 +124,31 @@ class ColumnNote {
       let noteValue = note.noteButtons.value;
       let hertzIndex = notesCollection[noteValue];
       note.noteButtons.addEventListener('click', () => {
-        note.isClicked = !note.isClicked;
-        if (!isInitialExecuted) {
-          // to start playing only on first click
-          playComposition();
-          isInitialExecuted = true;
-        }
-        if (note.isClicked) {
-          this.composedHertzArray.add(hertzIndex);
-        } else {
-          // Find and remove it from array
-          this.composedHertzArray.delete(
-            notesCollection[note.noteButtons.value]
-          );
-        }
-      });
+				note.isClicked = !note.isClicked;
+				if (!isInitialExecuted) {
+					// to start playing only on first click
+					playComposition();
+					isInitialExecuted = true;
+				}
+				if (note.isClicked) {
+					this.composedHertzArray.push(hertzIndex);
+				} else {
+					this.composedHertzArray.splice(
+						this.composedHertzArray.indexOf(
+							notesCollection[note.noteButtons.value]
+						),
+						1
+					);
+				}
+			});
       note.noteButtons.addEventListener('click', () => {
         if (note.noteButtons.classList.contains('note')) {
           note.noteButtons.classList.toggle('selected');
         }
       });
-      if (this.composedHertzArray.has(hertzIndex)) {
-        note.noteButtons.classList.toggle('selected');
-      }
+      if (this.composedHertzArray.indexOf(hertzIndex) != -1) {
+				note.noteButtons.classList.toggle('selected');
+			}
     }
     this.noteDuration = document.createElement('select');
     this.noteDuration.style.width = '60px';
@@ -325,7 +327,11 @@ let importer = document
     if (file.length != 1) {
       return false;
     }
-
+    let confirm = window.confirm('Are you sure you want to discard changes?')
+    if (!confirm) {
+      return
+    }
+    reset();
     let fr = new FileReader();
     fr.onload = progressEvent => {
       let results = JSON.parse(progressEvent.target.result);
