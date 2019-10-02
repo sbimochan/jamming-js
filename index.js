@@ -1,3 +1,5 @@
+import "./images/clef.png";
+
 class Sound {
   constructor(context) {
     this.context = context;
@@ -32,7 +34,7 @@ class NewColumn {
     this.addColumn = document.createElement('button');
     this.addColumn.setAttribute('class', 'column newColumnAdder');
     this.clef = document.createElement('img');
-    this.clef.src = 'images/clef.png';
+    this.clef.src = 'clef.png';
     this.clef.style.width = '70%';
     this.addColumn.appendChild(this.clef);
     composeSection[0].appendChild(this.addColumn);
