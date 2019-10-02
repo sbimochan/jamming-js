@@ -273,7 +273,13 @@ input[type="range"]::-webkit-slider-thumb {
 /* Firebase */
 
 #songList {
-  margin-left: 40px;
+  margin: 40px;
+}
+
+#songList ul {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
 }
 
 .songs {
