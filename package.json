@@ -1,0 +1,33 @@
+{
+  "name": "jamming-js",
+  "version": "1.0.0",
+  "description": "Built during internship period of Leapfrog Technology Inc. Had to build own project without using any library or framework in 2 weeks.",
+  "main": "index.js",
+  "scripts": {
+    "dev": "parcel index.html",
+    "build": "parcel build intex.html",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sbimochan/jamming-js.git"
+  },
+  "staticFiles": {
+    "staticPath": [
+      "images",
+      "fonts",
+      "css"
+    ]
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sbimochan/jamming-js/issues"
+  },
+  "homepage": "https://github.com/sbimochan/jamming-js#readme",
+  "devDependencies": {
+    "parcel-bundler": "^1.12.3"
+  },
+  "dependencies": {}
+}

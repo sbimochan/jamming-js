@@ -1,13 +1,7 @@
+import config from "./config";
+
 (function() {
   // Initialize Firebase
-  const config = {
-    apiKey: "AIzaSyCKqmjZUw-oUw2rCNag8XVRQc2S-fPcz8w",
-    authDomain: "jammingjs-52efa.firebaseapp.com",
-    databaseURL: "https://jammingjs-52efa.firebaseio.com",
-    projectId: "jammingjs-52efa",
-    storageBucket: "jammingjs-52efa.appspot.com",
-    messagingSenderId: "690797988767"
-  };
   firebase.initializeApp(config);
 })();
 const preObject = document.getElementById("composeName");

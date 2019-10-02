@@ -1,0 +1,10 @@
+const config = {
+  apiKey: API_KEY,
+  authDomain: AUTH_DOMAIN,
+  databaseURL: DOMAIN_URL,
+  projectId: PROJECT_ID,
+  storageBucket: STORAGE_BUCKET,
+  messagingSenderId: SENDER_ID
+};
+
+export default config;
