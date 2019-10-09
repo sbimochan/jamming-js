@@ -35,29 +35,30 @@
         </div>
       </div>
     </div>
-    <div class=utilitiesRow id=utilitiesRow>
-      <div class=utitlitiesContents>
-        <div class=fileLoadDiv id=fileLoadDiv>
+    <div class="utilitiesRow" id="utilitiesRow">
+      <div class="utitlitiesContents">
+        <div class="fileLoadDiv" id="fileLoadDiv">
           <div>Load your composition:</div>
-          <input id=input_file type=file class=input_file>
-          <button id=import>Submit</button>
+          <input id="input_file" type="file" class="input_file">
+          <button id="import">Submit</button>
         </div>
         <div class="clearfix tempoAndDetune">
-          <div class=tempoDiv>Tempo:
-            <span id=tempoValue></span>
-            <input id=tempo type=range onchange='printValue("tempo","tempoValue","bpm")' max=400 min=10 value=60>
+          <div class="tempoDiv">Tempo:
+            <span id="tempoValue"></span>
+            <input id="tempo" type="range" onchange=printValue("tempo","tempoValue","bpm") max="400" min="10" value="60">
           </div>
-          <div class=detuneDiv>Detune:
-            <span id=detuneValue></span>
-            <input id=detune type=range onchange='printValue("detune","detuneValue","cents")'>
+          <div class="detuneDiv">Detune:
+            <span id="detuneValue"></span>
+            <input id="detune" type="range" onchange=printValue("detune","detuneValue","cents")>
           </div>
         </div>
       </div>
     </div>
-    <div id='songList'>
+    <div id="songList">
       <h2>Firebase songs</h2>
       <br>
     </div>
+  </div>
 
     <script src="notevalues.js"></script>
     <script src="index.js"></script>
