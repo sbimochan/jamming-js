@@ -18,7 +18,7 @@
 <body>
   <div class="mainWrapper" id="mainWrapper">
     <div class="mainSoundContainerWrapper" id="mainSoundContainerWrapper">
-      <button onclick="reset()" class="reset-btn">
+      <button onclick=reset() class="reset-btn">
         Reset
       </button>
       <div id="mainSoundContainer"></div>
@@ -45,11 +45,11 @@
         <div class="clearfix tempoAndDetune">
           <div class="tempoDiv">Tempo:
             <span id="tempoValue"></span>
-            <input id="tempo" type="range" onchange='printValue("tempo","tempoValue","bpm")' max="400" min="10" value="60">
+            <input id="tempo" type="range" onchange=printValue("tempo","tempoValue","bpm") max="400" min="10" value="60">
           </div>
           <div class="detuneDiv">Detune:
             <span id="detuneValue"></span>
-            <input id="detune" type="range" onchange='printValue("detune","detuneValue","cents")'>
+            <input id="detune" type="range" onchange=printValue("detune","detuneValue","cents")>
           </div>
         </div>
       </div>
