@@ -319,7 +319,6 @@ function playComposition() {
         columnNotesArray[i].noteTime
       ); //third param = detune in cents
       if (columnNotesArray[i].waveform == 'distortion') {
-        console.log(columnNotesArray[i]);
         sound.oscillator.type = 'sawtooth';
         sound.distortion.curve = sound.makeDistortionCurve(400);
 			} else{
