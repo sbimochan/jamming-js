@@ -26,6 +26,19 @@ class Sound {
     this.gainNode.gain.exponentialRampToValueAtTime(0.1, time + endTime);
     this.oscillator.stop(time + endTime);
   }
+  makeDistortionCurve(amount) {
+    var k = amount,
+        n_samples = typeof sampleRate === 'number' ? sampleRate : 44100,
+        curve = new Float32Array(n_samples),
+        deg = Math.PI / 180,
+        i = 0,
+        x;
+    for ( ; i < n_samples; ++i ) {
+        x = i * 2 / n_samples - 1;
+        curve[i] = (3 + k)*Math.atan(Math.sinh(x*0.25)*5) / (Math.PI + k * Math.abs(x));
+    }
+    return curve;
+  }
 }
 class NewColumn {
   constructor() {
@@ -192,7 +205,8 @@ const sounds = {
   sine: 'peace',
   triangle: 'smooth',
   square: 'retro',
-  sawtooth: 'Stranger Things'
+  sawtooth: 'Stranger Things',
+  distortion: 'Distortion'
 };
 
 const noteTypes = {
@@ -304,9 +318,15 @@ function playComposition() {
         detuneSlider.value,
         columnNotesArray[i].noteTime
       ); //third param = detune in cents
-      sound.oscillator.type = columnNotesArray[i].waveform;
+      if (columnNotesArray[i].waveform == 'distortion') {
+        console.log(columnNotesArray[i]);
+        sound.oscillator.type = 'sawtooth';
+        sound.distortion.curve = sound.makeDistortionCurve(400);
+			} else{
+        sound.oscillator.type = columnNotesArray[i].waveform;
+      }
     }
-    // console.log(durations);
+
     setTimeout(playComposition, durations[index]);
     i++;
     index++;
