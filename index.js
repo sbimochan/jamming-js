@@ -15,78 +15,97 @@ class Sound {
   }
   play(hertz, time, cents, endTime) {
     this.init();
-    this.oscillator.frequency.setValueAtTime(hertz, this.context.currentTime);
-    this.oscillator.detune.setValueAtTime(cents, this.context.currentTime);
-    this.gainNode.gain.setValueAtTime(1, this.context.currentTime); // currentTime is 2x accurate than Date
-    this.oscillator.start(time);
+    const start = time;
+    // Set frequency and detune immediately for smooth transitions
+    this.oscillator.frequency.setValueAtTime(hertz, start);
+    this.oscillator.detune.setValueAtTime(cents, start);
+    // Smooth fade-in to avoid clicks (very quick attack for seamless transitions)
+    this.gainNode.gain.setValueAtTime(0, start);
+    this.gainNode.gain.linearRampToValueAtTime(0.3, start + 0.005); // Very quick attack (5ms)
+    this.gainNode.gain.exponentialRampToValueAtTime(0.01, start + 2.0); // Decay
+    this.oscillator.start(start);
     // endTime=1;
-    this.stop(time, endTime);
+    this.stop(start, endTime);
   }
   stop(time, endTime) {
-    this.gainNode.gain.exponentialRampToValueAtTime(0.1, time + endTime);
-    this.oscillator.stop(time + endTime);
+    const stopTime = time + endTime;
+    // Smooth fade out before stopping
+    this.gainNode.gain.exponentialRampToValueAtTime(0.001, stopTime - 0.01);
+    this.oscillator.stop(stopTime);
+  }
+
+  fadeOut(fadeTime) {
+    const now = this.context.currentTime;
+    // Smooth fade out over fadeTime seconds
+    this.gainNode.gain.cancelScheduledValues(now);
+    this.gainNode.gain.setValueAtTime(this.gainNode.gain.value, now);
+    this.gainNode.gain.linearRampToValueAtTime(0.001, now + fadeTime);
+    // Schedule stop after fade completes
+    this.oscillator.stop(now + fadeTime + 0.001);
   }
   makeDistortionCurve(amount) {
     var k = amount,
-        n_samples = typeof sampleRate === 'number' ? sampleRate : 44100,
-        curve = new Float32Array(n_samples),
-        deg = Math.PI / 180,
-        i = 0,
-        x;
-    for ( ; i < n_samples; ++i ) {
-        x = i * 2 / n_samples - 1;
-        curve[i] = (3 + k)*Math.atan(Math.sinh(x*0.25)*5) / (Math.PI + k * Math.abs(x));
+      n_samples = typeof sampleRate === "number" ? sampleRate : 44100,
+      curve = new Float32Array(n_samples),
+      deg = Math.PI / 180,
+      i = 0,
+      x;
+    for (; i < n_samples; ++i) {
+      x = (i * 2) / n_samples - 1;
+      curve[i] =
+        ((3 + k) * Math.atan(Math.sinh(x * 0.25) * 5)) /
+        (Math.PI + k * Math.abs(x));
     }
     return curve;
   }
 }
 class NewColumn {
   constructor() {
-    this.addColumn = document.createElement('button');
-    this.addColumn.setAttribute('class', 'column newColumnAdder');
-    this.clef = document.createElement('img');
-    this.clef.src = 'images/clef.png';
-    this.clef.style.width = '70%';
+    this.addColumn = document.createElement("button");
+    this.addColumn.setAttribute("class", "column newColumnAdder");
+    this.clef = document.createElement("img");
+    this.clef.src = "images/clef.png";
+    this.clef.style.width = "70%";
     this.addColumn.appendChild(this.clef);
     composeSection[0].appendChild(this.addColumn);
   }
 }
 class Exporter {
   constructor() {
-    this.exporterDiv = document.createElement('div');
+    this.exporterDiv = document.createElement("div");
     container.appendChild(this.exporterDiv);
-    this.button = document.createElement('a');
-    this.button.innerHTML = 'Save your song';
-    this.exporterDiv.id = 'exporter';
+    this.button = document.createElement("a");
+    this.button.innerHTML = "Save your song";
+    this.exporterDiv.id = "exporter";
     this.exporterDiv.appendChild(this.button);
   }
 }
 class Note {
   constructor() {
-    this.noteButtons = document.createElement('div');
-    this.noteButtons.style.padding = '10px';
-    this.noteButtons.className = 'note';
-    this.noteButtons.style.margin = '5px';
+    this.noteButtons = document.createElement("div");
+    this.noteButtons.style.padding = "10px";
+    this.noteButtons.className = "note";
+    this.noteButtons.style.margin = "5px";
     this.isClicked = false;
   }
 }
 class MainSound {
   constructor() {
-    this.waveform = 'sine';
-    this.mainSoundDiv = document.createElement('div');
-    this.mainSoundDiv.className = 'mainSoundDiv';
-    this.mainSoundDiv.innerHTML = 'Main sound: ';
+    this.waveform = "sine";
+    this.mainSoundDiv = document.createElement("div");
+    this.mainSoundDiv.className = "mainSoundDiv";
+    this.mainSoundDiv.innerHTML = "Main sound: ";
     mainSoundContainer.appendChild(this.mainSoundDiv);
-    this.toneSelector = document.createElement('select');
+    this.toneSelector = document.createElement("select");
     for (const prop in sounds) {
-      this.option = document.createElement('option');
+      this.option = document.createElement("option");
       this.option.innerHTML = sounds[prop];
       this.option.value = prop;
       this.toneSelector.appendChild(this.option);
     }
     this.mainSoundDiv.appendChild(this.toneSelector);
-    this.toneSelector.addEventListener('change', () => {
-      columnNotesArray.map(column => {
+    this.toneSelector.addEventListener("change", () => {
+      columnNotesArray.map((column) => {
         column.waveform = this.toneSelector.value; // changing instrument
         column.toneSelector.value = this.toneSelector.value;
       });
@@ -99,13 +118,13 @@ class ColumnNote {
     this.composedHertzArray = [];
     this.noteTime = 1;
     this.noteTimeLength = 1000;
-    this.waveform = 'sine';
+    this.waveform = "sine";
     //for file load and play
     if (
-      typeof hertzArr != 'undefined' &&
-      typeof waveform != 'undefined' &&
-      typeof noteTime != 'undefined' &&
-      noteTimeLength != 'undefined'
+      typeof hertzArr != "undefined" &&
+      typeof waveform != "undefined" &&
+      typeof noteTime != "undefined" &&
+      noteTimeLength != "undefined"
     ) {
       this.waveform = waveform;
       this.composedHertzArray = hertzArr.slice(0);
@@ -113,19 +132,19 @@ class ColumnNote {
       this.noteTimeLength = noteTimeLength;
       durations.push(noteTimeLength);
     }
-    this.column = document.createElement('div');
-    this.column.setAttribute('class', 'column notes-container');
+    this.column = document.createElement("div");
+    this.column.setAttribute("class", "column notes-container");
     composeSection[0].appendChild(this.column);
-    this.toneSelector = document.createElement('select');
-    this.toneSelector.style.width = '100px';
+    this.toneSelector = document.createElement("select");
+    this.toneSelector.style.width = "100px";
     for (const prop in sounds) {
-      this.option = document.createElement('option');
+      this.option = document.createElement("option");
       this.option.innerHTML = sounds[prop];
       this.option.value = prop;
       this.toneSelector.appendChild(this.option);
     }
     this.column.appendChild(this.toneSelector);
-    this.toneSelector.addEventListener('change', () => {
+    this.toneSelector.addEventListener("change", () => {
       this.waveform = this.toneSelector.value; //changing instrument
     });
     for (const prop in notes) {
@@ -136,45 +155,45 @@ class ColumnNote {
       this.column.appendChild(note.noteButtons);
       let noteValue = note.noteButtons.value;
       let hertzIndex = notesCollection[noteValue];
-      note.noteButtons.addEventListener('click', () => {
-				note.isClicked = !note.isClicked;
-				if (!isInitialExecuted) {
-					// to start playing only on first click
-					playComposition();
-					isInitialExecuted = true;
-				}
-				if (note.isClicked) {
-					this.composedHertzArray.push(hertzIndex);
-				} else {
-					this.composedHertzArray.splice(
-						this.composedHertzArray.indexOf(
-							notesCollection[note.noteButtons.value]
-						),
-						1
-					);
-				}
-			});
-      note.noteButtons.addEventListener('click', () => {
-        if (note.noteButtons.classList.contains('note')) {
-          note.noteButtons.classList.toggle('selected');
+      note.noteButtons.addEventListener("click", () => {
+        note.isClicked = !note.isClicked;
+        if (!isInitialExecuted) {
+          // to start playing only on first click
+          playComposition();
+          isInitialExecuted = true;
+        }
+        if (note.isClicked) {
+          this.composedHertzArray.push(hertzIndex);
+        } else {
+          this.composedHertzArray.splice(
+            this.composedHertzArray.indexOf(
+              notesCollection[note.noteButtons.value]
+            ),
+            1
+          );
+        }
+      });
+      note.noteButtons.addEventListener("click", () => {
+        if (note.noteButtons.classList.contains("note")) {
+          note.noteButtons.classList.toggle("selected");
         }
       });
       if (this.composedHertzArray.indexOf(hertzIndex) != -1) {
-				note.noteButtons.classList.toggle('selected');
-			}
+        note.noteButtons.classList.toggle("selected");
+      }
     }
-    this.noteDuration = document.createElement('select');
-    this.noteDuration.style.width = '60px';
+    this.noteDuration = document.createElement("select");
+    this.noteDuration.style.width = "60px";
     for (const prop in noteTypes) {
-      this.option = document.createElement('option');
+      this.option = document.createElement("option");
       this.option.innerHTML = noteTypes[prop];
       this.option.value = prop;
       this.noteDuration.appendChild(this.option);
     }
     this.column.appendChild(this.noteDuration);
-    this.trash = document.createElement('button');
-    this.trash.setAttribute('class', 'danger');
-    this.trashIconHolder = document.createElement('span');
+    this.trash = document.createElement("button");
+    this.trash.setAttribute("class", "danger");
+    this.trashIconHolder = document.createElement("span");
     this.trashIconHolder.innerHTML =
       "<i class='fa fa-trash-o' aria-hidden='true'></i>";
     this.trash.appendChild(this.trashIconHolder);
@@ -182,37 +201,38 @@ class ColumnNote {
   }
 }
 
-let context = new(window.AudioContext || window.webkitAudioContext)();
+let context = new (window.AudioContext || window.webkitAudioContext)();
 let sound = new Sound(context);
-let composedButton = document.getElementsByClassName('note');
-let composeSection = document.getElementsByClassName('compose-section');
-let container = document.getElementById('container');
-let columnDiv = document.getElementsByClassName('column');
-let mainSoundContainer = document.getElementById('mainSoundContainer');
-let noteButtonsid = document.getElementById('noteButtons');
+let activeSounds = []; // Track active sounds for smooth transitions
+let composedButton = document.getElementsByClassName("note");
+let composeSection = document.getElementsByClassName("compose-section");
+let container = document.getElementById("container");
+let columnDiv = document.getElementsByClassName("column");
+let mainSoundContainer = document.getElementById("mainSoundContainer");
+let noteButtonsid = document.getElementById("noteButtons");
 const notes = {
-  C4: 'C',
-  D4: 'D',
-  E4: 'E',
-  F4: 'F',
-  G4: 'G',
-  A4: 'A',
-  B4: 'B',
-  C5: 'C'
+  C4: "C",
+  D4: "D",
+  E4: "E",
+  F4: "F",
+  G4: "G",
+  A4: "A",
+  B4: "B",
+  C5: "C"
 };
 
 const sounds = {
-  sine: 'peace',
-  triangle: 'smooth',
-  square: 'retro',
-  sawtooth: 'Stranger Things',
-  distortion: 'Distortion'
+  sine: "peace",
+  triangle: "smooth",
+  square: "retro",
+  sawtooth: "Stranger Things",
+  distortion: "Distortion"
 };
 
 const noteTypes = {
-  '1': 'whole note',
-  '0.5': 'half note',
-  '0.25': 'quarter note'
+  1: "whole note",
+  0.5: "half note",
+  0.25: "quarter note"
 };
 
 let mainSound = new MainSound();
@@ -220,42 +240,37 @@ let columnNotesArray = [];
 let newColumn = new NewColumn(); //Adder
 let exporter = new Exporter();
 
-exporter.button.addEventListener('click', () => {
+exporter.button.addEventListener("click", () => {
   //to write into json
   let data =
-    'text/json;charset=utf-8,' +
+    "text/json;charset=utf-8," +
     encodeURIComponent(JSON.stringify(columnNotesArray));
-  exporter.button.href = 'data:' + data;
-  exporter.button.download = 'song.json';
+  exporter.button.href = "data:" + data;
+  exporter.button.download = "song.json";
   firebase
     .database()
     .ref()
-    .child('composition/' + ID())
+    .child("composition/" + ID())
     .set({
       song: JSON.stringify(columnNotesArray)
     });
 });
 
-var ID = function() {
-  return (
-    '_' +
-    Math.random()
-    .toString(36)
-    .substr(2, 9)
-  );
+var ID = function () {
+  return "_" + Math.random().toString(36).substr(2, 9);
 };
 
 let durations = [];
-newColumn.addColumn.addEventListener('click', () => {
+newColumn.addColumn.addEventListener("click", () => {
   let columnNote = new ColumnNote();
   columnNotesArray.push(columnNote);
   durations.push(columnNote.noteTimeLength); //durations
-  columnNote.trash.addEventListener('click', () => {
+  columnNote.trash.addEventListener("click", () => {
     durations.splice(columnNotesArray.indexOf(columnNote), 1);
     columnNotesArray.splice(columnNotesArray.indexOf(columnNote), 1);
-    columnNote.column.style.display = 'none';
+    columnNote.column.style.display = "none";
   });
-  columnNote.noteDuration.addEventListener('change', () => {
+  columnNote.noteDuration.addEventListener("change", () => {
     durations.splice(columnNotesArray.indexOf(columnNote), 1); //durations splice
     columnNote.noteTime = Number(columnNote.noteDuration.value);
     columnNote.noteTimeLength = columnNote.noteTime * 1000;
@@ -268,13 +283,13 @@ newColumn.addColumn.addEventListener('click', () => {
 });
 
 // let tempoInterval;
-tempoSlider = document.getElementById('tempo');
+tempoSlider = document.getElementById("tempo");
 tempoSlider.min = 10;
 tempoSlider.max = 400;
 tempoSlider.value = 60;
 tempoSlider.step = 10;
 
-detuneSlider = document.getElementById('detune');
+detuneSlider = document.getElementById("detune");
 detuneSlider.min = -900;
 detuneSlider.max = 900;
 detuneSlider.value = 0;
@@ -282,7 +297,7 @@ detuneSlider.step = 50;
 let oldValue = 1;
 
 /**Tempo */
-tempoSlider.addEventListener('change', () => {
+tempoSlider.addEventListener("change", () => {
   sendTempoValue = tempoSlider.value;
   value = sendTempoValue / 60;
   durations.forEach((item, index, arr) => {
@@ -300,30 +315,44 @@ let index = 0;
 function playComposition() {
   if (columnNotesArray.length !== 0) {
     let now = context.currentTime;
+
+    // Fade out previous sounds smoothly
+    const fadeTime = 0.02; // 20ms fade out for smooth transition
+    activeSounds.forEach((activeSound) => {
+      if (activeSound && activeSound.oscillator) {
+        activeSound.fadeOut(fadeTime);
+      }
+    });
+    activeSounds = []; // Clear the array
+
     if (i !== 0) {
-      columnNotesArray[i - 1].column.style.backgroundColor = '#f3f3f3';
+      columnNotesArray[i - 1].column.style.backgroundColor = "#f3f3f3";
     } else {
       columnNotesArray[
         columnNotesArray.length - 1
-      ].column.style.backgroundColor = '#f3f3f3';
+      ].column.style.backgroundColor = "#f3f3f3";
     }
 
     if (columnNotesArray[i] && columnNotesArray[i].column) {
-      columnNotesArray[i].column.style.backgroundColor = '#e5f6ff';
+      columnNotesArray[i].column.style.backgroundColor = "#e5f6ff";
     }
+
+    // Create a new Sound instance for each note in the chord
     for (const hertz of columnNotesArray[i].composedHertzArray) {
-      sound.play(
+      const noteSound = new Sound(context);
+      noteSound.play(
         hertz,
-        now,
+        now + fadeTime,
         detuneSlider.value,
         columnNotesArray[i].noteTime
-      ); //third param = detune in cents
-      if (columnNotesArray[i].waveform == 'distortion') {
-        sound.oscillator.type = 'sawtooth';
-        sound.distortion.curve = sound.makeDistortionCurve(400);
-			} else{
-        sound.oscillator.type = columnNotesArray[i].waveform;
+      );
+      if (columnNotesArray[i].waveform == "distortion") {
+        noteSound.oscillator.type = "sawtooth";
+        noteSound.distortion.curve = noteSound.makeDistortionCurve(400);
+      } else {
+        noteSound.oscillator.type = columnNotesArray[i].waveform;
       }
+      activeSounds.push(noteSound); // Track this sound
     }
 
     setTimeout(playComposition, durations[index]);
@@ -340,23 +369,23 @@ function playComposition() {
 
 /*To load JSON file*/
 let importer = document
-  .getElementById('import')
-  .addEventListener('click', () => {
-    let file = document.getElementById('input_file').files;
+  .getElementById("import")
+  .addEventListener("click", () => {
+    let file = document.getElementById("input_file").files;
     if (file.length != 1) {
       return false;
     }
     if (columnNotesArray.length > 0) {
-      let confirm = window.confirm('Are you sure you want to discard changes?')
+      let confirm = window.confirm("Are you sure you want to discard changes?");
       if (!confirm) {
-        return
+        return;
       }
-		}
+    }
     reset();
     let fr = new FileReader();
-    fr.onload = progressEvent => {
+    fr.onload = (progressEvent) => {
       let results = JSON.parse(progressEvent.target.result);
-      results.forEach(result => {
+      results.forEach((result) => {
         let column = new ColumnNote(
           result.composedHertzArray,
           result.waveform,
@@ -380,9 +409,11 @@ function printValue(sliderID, spanID, unit) {
 function reset() {
   columnNotesArray = [];
   durations = [];
-  const columns = document.getElementsByClassName('notes-container');
+  const columns = document.getElementsByClassName("notes-container");
   while (columns.length > 0) {
-    document.getElementsByClassName('compose-section')[0].removeChild(columns[0]);
+    document
+      .getElementsByClassName("compose-section")[0]
+      .removeChild(columns[0]);
   }
   isInitialExecuted = false;
 }
